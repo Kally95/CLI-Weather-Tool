@@ -2,20 +2,21 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 )
 
 const APIkey = "09ec83df87c30f753e96bff8681f03af"
 
 func main() {
-	input := os.Args[1]
 
-	fmt.Println("City name:")
-	fmt.Println(input)
+	var location string
+	fmt.Println("Starting application...")
+	flag.StringVar(&location, "location", "London", "Flagname should specify a location e.g. London")
+	flag.Parse()
 
 	type APIResp struct {
 		Weather []struct {
@@ -26,7 +27,7 @@ func main() {
 		} `json:"main"`
 	}
 
-	resp, err := http.Get("http://api.openweathermap.org/data/2.5/weather?q=" + string(input) + "&appid=" + APIkey)
+	resp, err := http.Get("http://api.openweathermap.org/data/2.5/weather?q=" + location + "&appid=" + APIkey)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -44,11 +45,12 @@ func main() {
 	Desc := WeatherInfo.Weather[0].Description
 	Temp := WeatherInfo.Main.Temp
 
-	log.Println(": The weather in " + string(input) + " is currently " + KtoC(Temp) + " degrees Celsius. With a description of " + Desc)
+	fmt.Println("The weather in " + location + " is currently " + KtoC(Temp) + " degrees Celsius. With a description of " + Desc)
 
 }
 
-// Converts Kelvin to Celsius
+// KtoC -> String
+// Convert a given Kelvin metric to Celsius
 func KtoC(k float64) string {
 	return fmt.Sprintf("%.2f", k-273.15)
 }

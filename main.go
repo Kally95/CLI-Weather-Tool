@@ -7,9 +7,11 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
-const APIkey = "09ec83df87c30f753e96bff8681f03af"
 const APIurl = "http://api.openweathermap.org/data/2.5/weather?q="
 
 type APIResp struct {
@@ -23,6 +25,18 @@ type APIResp struct {
 
 var location string
 var WeatherInfo APIResp
+var dotenv string
+
+// GetAPIkey -> string
+// Retrieves the API key stored within the .env file
+func GetAPIkey(key string) string {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	return os.Getenv(key)
+
+}
 
 // KtoC -> String
 // Convert a given Kelvin metric to Celsius
@@ -33,7 +47,7 @@ func KtoC(k float64) string {
 // GetAPI -> *http.Response, error
 // Uses the HTTP GET method to make a GET request to the API
 func GetAPI(loc, key string) (*http.Response, error) {
-	resp, err := http.Get(APIurl + location + "&appid=" + APIkey)
+	resp, err := http.Get(APIurl + location + "&appid=" + dotenv)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -53,10 +67,11 @@ func ReadAPI(resp *http.Response) ([]byte, error) {
 
 func main() {
 
+	dotenv = GetAPIkey("APIKEY")
 	flag.StringVar(&location, "location", "London", "Flagname should specify a location e.g. London")
 	flag.Parse()
 
-	r, err := GetAPI(location, APIkey)
+	r, err := GetAPI(location, dotenv)
 	if err != nil {
 		fmt.Println(err)
 	}

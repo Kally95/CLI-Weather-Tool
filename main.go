@@ -35,7 +35,6 @@ func GetAPIkey(key string) string {
 		log.Fatal("Error loading .env file")
 	}
 	return os.Getenv(key)
-
 }
 
 // KtoC -> String

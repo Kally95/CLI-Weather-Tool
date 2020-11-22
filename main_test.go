@@ -1,19 +1,23 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
+	"net/url"
+	"strings"
 	"testing"
 )
 
-// func TestGetAPI(t *testing.T) {
-// 	k := GetAPIkey("APIKEY")
-// 	l := "London"
-// 	resp, err := GetAPI(l, k)
-// 	if err != nil {
-// 		t.Fatalf("GetAPI(%v, %v) = %v", l, k, resp)
-// 	}
-// 	fmt.Println(resp.Status)
-// 	// Currently returning a 401 (not authorised) *must fix*
-// }
+func TestGetAPI(t *testing.T) {
+	k := GetAPIkey("APIKEY")
+	v := url.Values{}
+	api := "http://api.openweathermap.org/data/2.5/weather?q=London&appendid=" + k
+	req, err := http.NewRequest(http.MethodGet, api, strings.NewReader(v.Encode()))
+	if err != nil {
+		t.Fatalf("GetAPI failed to return from call")
+	}
+	fmt.Println(req)
+}
 
 func TestKtoC(t *testing.T) {
 	testCases := []struct {
